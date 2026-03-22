@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PLAYERS } from './data/players';
+import { INITIAL_RECORDS } from './data/records';
 import { GuestForm } from './components/GuestForm';
 import { RecordForm } from './components/RecordForm';
 import { StandingsPanel } from './components/StandingsPanel';
@@ -11,6 +12,7 @@ import {
   computeStandings,
   createEmptyRecordDraft,
   createMatchRecord,
+  mergeInitialRecords,
   type RecordDraft,
 } from './lib/records';
 import { createSeedKey, getPlayerSeedToken } from './lib/seed';
@@ -36,7 +38,12 @@ function getTodayDate() {
 
 function loadInitialState(): StoredState {
   const today = getTodayDate();
-  const fallback = { date: today, selectedIds: PLAYERS.map((player) => player.id), guests: [], records: [] };
+  const fallback = {
+    date: today,
+    selectedIds: PLAYERS.map((player) => player.id),
+    guests: [],
+    records: INITIAL_RECORDS,
+  };
 
   const params = new URLSearchParams(window.location.search);
   const queryDate = params.get('date');
@@ -47,7 +54,7 @@ function loadInitialState(): StoredState {
       date: queryDate ?? today,
       selectedIds: queryPlayers ? queryPlayers.split(',').filter(Boolean) : fallback.selectedIds,
       guests: [],
-      records: [],
+      records: INITIAL_RECORDS,
     };
   }
 
@@ -62,7 +69,7 @@ function loadInitialState(): StoredState {
       date: parsed.date || today,
       selectedIds: parsed.selectedIds?.length ? parsed.selectedIds : fallback.selectedIds,
       guests: Array.isArray(parsed.guests) ? parsed.guests : [],
-      records: Array.isArray(parsed.records) ? parsed.records : [],
+      records: mergeInitialRecords([...INITIAL_RECORDS, ...(Array.isArray(parsed.records) ? parsed.records : [])]),
     };
   } catch {
     return fallback;
@@ -166,7 +173,7 @@ export default function App() {
     }
 
     const record = createMatchRecord(recordDraft);
-    setRecords((current) => [record, ...current]);
+    setRecords((current) => mergeInitialRecords([record, ...current]));
     setRecordDraft(createEmptyRecordDraft(date));
   }
 

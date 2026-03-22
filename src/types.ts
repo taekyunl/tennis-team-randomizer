@@ -60,6 +60,7 @@ export interface MatchRecord {
 
 export interface PlayerStanding {
   playerName: string;
+  attendance: number;
   wins: number;
   losses: number;
   games: number;

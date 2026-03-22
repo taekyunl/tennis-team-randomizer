@@ -46,13 +46,25 @@ export function createMatchRecord(draft: RecordDraft): MatchRecord {
   };
 }
 
+export function mergeInitialRecords(records: MatchRecord[]): MatchRecord[] {
+  const uniqueRecords = new Map<string, MatchRecord>();
+
+  for (const record of records) {
+    uniqueRecords.set(record.id, record);
+  }
+
+  return [...uniqueRecords.values()].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
 export function computeStandings(records: MatchRecord[]): PlayerStanding[] {
   const table = new Map<string, PlayerStanding>();
+  const attendanceDates = new Map<string, Set<string>>();
 
   function ensure(playerName: string) {
     if (!table.has(playerName)) {
       table.set(playerName, {
         playerName,
+        attendance: 0,
         wins: 0,
         losses: 0,
         games: 0,
@@ -67,6 +79,15 @@ export function computeStandings(records: MatchRecord[]): PlayerStanding[] {
   for (const record of records) {
     const winningTeam = record.winner === 'A' ? record.teamA : record.teamB;
     const losingTeam = record.winner === 'A' ? record.teamB : record.teamA;
+    const allPlayers = [...record.teamA, ...record.teamB];
+
+    for (const playerName of allPlayers) {
+      if (!attendanceDates.has(playerName)) {
+        attendanceDates.set(playerName, new Set());
+      }
+      attendanceDates.get(playerName)!.add(record.date);
+      ensure(playerName);
+    }
 
     for (const playerName of winningTeam) {
       const row = ensure(playerName);
@@ -85,6 +106,7 @@ export function computeStandings(records: MatchRecord[]): PlayerStanding[] {
   return [...table.values()]
     .map((row) => ({
       ...row,
+      attendance: attendanceDates.get(row.playerName)?.size ?? 0,
       winRate: row.games ? row.wins / row.games : 0,
     }))
     .sort((left, right) => {

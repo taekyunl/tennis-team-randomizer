@@ -29,6 +29,7 @@ export function StandingsPanel({
                   <tr className="border-b border-line">
                     <th className="px-3 py-3">순위</th>
                     <th className="px-3 py-3">이름</th>
+                    <th className="px-3 py-3">참석</th>
                     <th className="px-3 py-3">승</th>
                     <th className="px-3 py-3">패</th>
                     <th className="px-3 py-3">승률</th>
@@ -39,6 +40,7 @@ export function StandingsPanel({
                     <tr key={row.playerName} className="border-b border-white/5 text-ink last:border-b-0">
                       <td className="px-3 py-3">{index + 1}</td>
                       <td className="px-3 py-3">{row.playerName}</td>
+                      <td className="px-3 py-3">{row.attendance}</td>
                       <td className="px-3 py-3">{row.wins}</td>
                       <td className="px-3 py-3">{row.losses}</td>
                       <td className="px-3 py-3">{(row.winRate * 100).toFixed(0)}%</td>

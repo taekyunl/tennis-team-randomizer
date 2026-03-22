@@ -49,8 +49,8 @@ describe('records', () => {
 
     const standings = computeStandings(records);
 
-    expect(standings[0]).toMatchObject({ playerName: '강인갑', wins: 2, losses: 0 });
-    expect(standings.find((row) => row.playerName === '고영수')).toMatchObject({ wins: 0, losses: 2 });
+    expect(standings[0]).toMatchObject({ playerName: '강인갑', attendance: 2, wins: 2, losses: 0 });
+    expect(standings.find((row) => row.playerName === '고영수')).toMatchObject({ attendance: 2, wins: 0, losses: 2 });
   });
 
   it('computes pair standings separately', () => {

@@ -1,0 +1,35 @@
+@import url('https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: 'SUIT Variable', system-ui, sans-serif;
+  background: #0a0d0c;
+  color: #f4f2ea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top, rgba(207, 233, 109, 0.07), transparent 24%),
+    linear-gradient(180deg, #0a0d0c 0%, #090c0b 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(207, 233, 109, 0.28);
+  color: #f8f8f1;
+}

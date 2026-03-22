@@ -134,12 +134,28 @@ export function pickDeterministicCandidate(
   }
 
   const bestScore = Math.min(...candidates.map((candidate) => candidate.score));
-  const tolerance = Math.max(0.24, bestScore * 0.18);
+  const tolerance = Math.max(0.42, bestScore * 0.28);
   const eligibleCandidates = candidates.filter((candidate) => candidate.score <= bestScore + tolerance);
-  const selectedIndex = Math.floor(rng() * eligibleCandidates.length);
+  const weightedCandidates = eligibleCandidates.map((candidate) => {
+    const distance = candidate.score - bestScore;
+    const weight = 1 / (1 + distance * 4.5);
+    return { candidate, weight };
+  });
+  const totalWeight = weightedCandidates.reduce((sum, entry) => sum + entry.weight, 0);
+  let threshold = rng() * totalWeight;
+
+  for (const entry of weightedCandidates) {
+    threshold -= entry.weight;
+    if (threshold <= 0) {
+      return {
+        candidate: entry.candidate,
+        eligibleCandidateCount: eligibleCandidates.length,
+      };
+    }
+  }
 
   return {
-    candidate: eligibleCandidates[selectedIndex] ?? eligibleCandidates[0],
+    candidate: weightedCandidates[weightedCandidates.length - 1]?.candidate ?? eligibleCandidates[0],
     eligibleCandidateCount: eligibleCandidates.length,
   };
 }

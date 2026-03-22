@@ -27,8 +27,8 @@ describe('seeded assignment', () => {
   it('can produce a different result when the date changes', () => {
     const scenarios = [
       ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선'],
-      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '김동명', '이태균'],
-      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '김동명'],
+      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '이동명', '이태균'],
+      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '이동명'],
     ];
 
     let changed = false;
@@ -117,5 +117,13 @@ describe('seeded assignment', () => {
 
     expect(candidates.length).toBeGreaterThan(0);
     expect(new Set(candidates.map((candidate) => candidate.waitingPlayer?.name)).size).toBe(selected.length);
+  });
+
+  it('often changes pairings across weekly seed dates for the same roster', () => {
+    const players = findPlayers(['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '이동명', '이태균']);
+    const weekOne = JSON.stringify(assignTeams('2026-03-21', players).teams);
+    const weekTwo = JSON.stringify(assignTeams('2026-03-28', players).teams);
+
+    expect(weekTwo).not.toBe(weekOne);
   });
 });

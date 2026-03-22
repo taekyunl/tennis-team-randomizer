@@ -5,10 +5,6 @@ export interface RecordDraft {
   teamA: [string, string];
   teamB: [string, string];
   winner: 'A' | 'B';
-  sets: Array<{
-    teamAGames: string;
-    teamBGames: string;
-  }>;
   note: string;
 }
 
@@ -18,11 +14,6 @@ export function createEmptyRecordDraft(date: string): RecordDraft {
     teamA: ['', ''],
     teamB: ['', ''],
     winner: 'A',
-    sets: [
-      { teamAGames: '', teamBGames: '' },
-      { teamAGames: '', teamBGames: '' },
-      { teamAGames: '', teamBGames: '' },
-    ],
     note: '',
   };
 }
@@ -33,15 +24,6 @@ export function canSaveRecord(draft: RecordDraft): boolean {
     names.every(Boolean) &&
     new Set(names).size === 4
   );
-}
-
-function normalizeSets(draft: RecordDraft) {
-  return draft.sets
-    .map((set) => ({
-      teamAGames: Number.parseInt(set.teamAGames, 10),
-      teamBGames: Number.parseInt(set.teamBGames, 10),
-    }))
-    .filter((set) => Number.isFinite(set.teamAGames) && Number.isFinite(set.teamBGames));
 }
 
 function getPairKey(players: [string, string]) {
@@ -59,7 +41,6 @@ export function createMatchRecord(draft: RecordDraft): MatchRecord {
     teamA: [draft.teamA[0].trim(), draft.teamA[1].trim()],
     teamB: [draft.teamB[0].trim(), draft.teamB[1].trim()],
     winner: draft.winner,
-    sets: normalizeSets(draft),
     note: draft.note.trim(),
     createdAt: new Date().toISOString(),
   };

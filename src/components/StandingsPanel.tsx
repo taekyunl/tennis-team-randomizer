@@ -7,14 +7,6 @@ interface StandingsPanelProps {
   onDeleteRecord: (recordId: string) => void;
 }
 
-function renderSetSummary(record: MatchRecord) {
-  if (!record.sets?.length) {
-    return null;
-  }
-
-  return record.sets.map((set) => `${set.teamAGames}-${set.teamBGames}`).join(' / ');
-}
-
 export function StandingsPanel({
   playerStandings,
   pairStandings,
@@ -125,9 +117,6 @@ export function StandingsPanel({
                   <p className="mt-1 text-xs text-accent/85">
                     승리: {record.winner === 'A' ? record.teamA.join(' / ') : record.teamB.join(' / ')}
                   </p>
-                  {renderSetSummary(record) ? (
-                    <p className="mt-1 text-xs text-muted">세트: {renderSetSummary(record)}</p>
-                  ) : null}
                   {record.note ? <p className="mt-1 text-xs text-muted">{record.note}</p> : null}
                 </div>
                 <button

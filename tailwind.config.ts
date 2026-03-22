@@ -17,6 +17,7 @@ export default {
       },
       fontFamily: {
         sans: ['"SUIT Variable"', '"Pretendard Variable"', 'system-ui', 'sans-serif'],
+        display: ['"Cormorant Garamond"', '"Iowan Old Style"', 'serif'],
         mono: ['"JetBrains Mono"', '"SFMono-Regular"', 'monospace'],
       },
       boxShadow: {

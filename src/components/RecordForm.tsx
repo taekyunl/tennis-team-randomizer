@@ -128,49 +128,6 @@ export function RecordForm({ draft, playerOptions, onChange, onSave, disabled }:
         </div>
       </div>
 
-      <div className="rounded-[22px] border border-line bg-black/15 p-4">
-        <p className="text-sm font-medium text-ink">세트 스코어</p>
-        <div className="mt-4 grid gap-3">
-          {draft.sets.map((set, index) => (
-            <div key={`set-${index + 1}`} className="grid grid-cols-[0.9fr_1fr_1fr] gap-3">
-              <p className="self-center text-xs uppercase tracking-[0.22em] text-muted">
-                Set {index + 1}
-              </p>
-              <input
-                type="number"
-                min="0"
-                value={set.teamAGames}
-                onChange={(event) =>
-                  onChange({
-                    ...draft,
-                    sets: draft.sets.map((entry, entryIndex) =>
-                      entryIndex === index ? { ...entry, teamAGames: event.target.value } : entry,
-                    ),
-                  })
-                }
-                placeholder="A팀"
-                className="w-full rounded-2xl border border-line bg-[#0d1110] px-4 py-3 text-sm text-ink outline-none transition focus:border-accent/50 focus:ring-2 focus:ring-accent/40"
-              />
-              <input
-                type="number"
-                min="0"
-                value={set.teamBGames}
-                onChange={(event) =>
-                  onChange({
-                    ...draft,
-                    sets: draft.sets.map((entry, entryIndex) =>
-                      entryIndex === index ? { ...entry, teamBGames: event.target.value } : entry,
-                    ),
-                  })
-                }
-                placeholder="B팀"
-                className="w-full rounded-2xl border border-line bg-[#0d1110] px-4 py-3 text-sm text-ink outline-none transition focus:border-accent/50 focus:ring-2 focus:ring-accent/40"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
       <button
         type="button"
         onClick={onSave}

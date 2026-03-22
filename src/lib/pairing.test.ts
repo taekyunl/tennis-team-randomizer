@@ -84,16 +84,16 @@ describe('seeded assignment', () => {
     expect(assignedNames).toEqual(selected.map((player) => player.name).sort());
   });
 
-  it('scores balanced mixed-tier teams better than extreme same-tier teams', () => {
-    const players = findPlayers(['이종하', '강인갑', '고영수', '이태균']);
-    const balanced = scorePairing(
+  it('penalizes teams that pair the weak-player group together', () => {
+    const players = findPlayers(['손혜원', '이태균', '이종하', '고영수']);
+    const allowed = scorePairing(
       [
-        [players[0], players[3]],
-        [players[1], players[2]],
+        [players[0], players[2]],
+        [players[1], players[3]],
       ],
       players,
     );
-    const extreme = scorePairing(
+    const forbidden = scorePairing(
       [
         [players[0], players[1]],
         [players[2], players[3]],
@@ -101,7 +101,20 @@ describe('seeded assignment', () => {
       players,
     );
 
-    expect(balanced.score).toBeLessThan(extreme.score);
+    expect(allowed.score).toBeLessThan(forbidden.score);
+  });
+
+  it('avoids putting the weak-player group on the same team when possible', () => {
+    const players = findPlayers(['손혜원', '이태균', '김혜연', '이종하', '강인갑', '고영수']);
+    const result = assignTeams('2026-03-21', players);
+
+    for (const team of result.teams) {
+      const weakCount = team.members.filter((member) =>
+        ['손혜원', '이태균', '김혜연'].includes(member.name),
+      ).length;
+
+      expect(weakCount).toBeLessThanOrEqual(1);
+    }
   });
 
   it('creates the same seed key regardless of selection order', () => {

@@ -2,7 +2,7 @@ import type { AssignmentResult, PairingCandidate, Player } from '../types';
 import { createSeedKey, createSeededRng, getPlayerSeedToken } from './seed';
 
 const collator = new Intl.Collator('ko');
-const tierWeight = { A: 3, B: 2, C: 1 } as const;
+const WEAK_PLAYER_NAMES = new Set(['손혜원', '이태균', '김혜연']);
 
 function sortPlayers(players: Player[]): Player[] {
   return [...players].sort((left, right) => collator.compare(left.name, right.name));
@@ -17,61 +17,27 @@ function createSignature(pairs: Array<[Player, Player]>, waitingPlayer?: Player)
   return waitingPlayer ? `${pairSignature}__waiting:${waitingPlayer.name}` : pairSignature;
 }
 
-function getStandardDeviation(values: number[]): number {
-  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
-  const variance = values.reduce((sum, value) => sum + (value - average) ** 2, 0) / values.length;
-  return Math.sqrt(variance);
-}
-
-function calculateWaitingPenalty(waitingPlayer: Player | undefined, players: Player[]): number {
-  if (!waitingPlayer) {
-    return 0;
-  }
-
-  const averageRating = players.reduce((sum, player) => sum + player.rating, 0) / players.length;
-  return Math.abs(waitingPlayer.rating - averageRating) * 0.22;
+function isForbiddenWeakPair(left: Player, right: Player) {
+  return WEAK_PLAYER_NAMES.has(left.name) && WEAK_PLAYER_NAMES.has(right.name);
 }
 
 export function scorePairing(
   pairs: Array<[Player, Player]>,
-  players: Player[],
+  _players: Player[],
   waitingPlayer?: Player,
 ): Omit<PairingCandidate, 'pairs' | 'waitingPlayer' | 'signature'>['meta'] & { score: number } {
-  const teamTotals = pairs.map(([left, right]) => left.rating + right.rating);
-  const standardDeviation = getStandardDeviation(teamTotals);
-  const range = Math.max(...teamTotals) - Math.min(...teamTotals);
-
-  let sameTierPairs = 0;
-  let extremePairs = 0;
-
-  for (const [left, right] of pairs) {
-    if (left.tier === right.tier) {
-      sameTierPairs += 1;
-    }
-
-    const leftWeight = tierWeight[left.tier];
-    const rightWeight = tierWeight[right.tier];
-
-    if (Math.abs(leftWeight - rightWeight) === 0 && (leftWeight === 3 || leftWeight === 1)) {
-      extremePairs += 1;
-    }
-  }
-
-  const waitingPenalty = calculateWaitingPenalty(waitingPlayer, players);
-  const score =
-    standardDeviation * 1.45 +
-    range * 0.9 +
-    sameTierPairs * 0.28 +
-    extremePairs * 0.24 +
-    waitingPenalty;
+  const forbiddenPairCount = pairs.filter(([left, right]) => isForbiddenWeakPair(left, right)).length;
+  const score = forbiddenPairCount;
 
   return {
     score,
-    standardDeviation,
-    range,
-    sameTierPairs,
-    extremePairs,
-    waitingPenalty,
+    standardDeviation: 0,
+    range: 0,
+    averagePartnerGap: 0,
+    maxPartnerGap: 0,
+    sameTierPairs: forbiddenPairCount,
+    extremePairs: 0,
+    waitingPenalty: waitingPlayer ? 0 : 0,
   };
 }
 
@@ -134,28 +100,11 @@ export function pickDeterministicCandidate(
   }
 
   const bestScore = Math.min(...candidates.map((candidate) => candidate.score));
-  const tolerance = Math.max(0.42, bestScore * 0.28);
-  const eligibleCandidates = candidates.filter((candidate) => candidate.score <= bestScore + tolerance);
-  const weightedCandidates = eligibleCandidates.map((candidate) => {
-    const distance = candidate.score - bestScore;
-    const weight = 1 / (1 + distance * 4.5);
-    return { candidate, weight };
-  });
-  const totalWeight = weightedCandidates.reduce((sum, entry) => sum + entry.weight, 0);
-  let threshold = rng() * totalWeight;
-
-  for (const entry of weightedCandidates) {
-    threshold -= entry.weight;
-    if (threshold <= 0) {
-      return {
-        candidate: entry.candidate,
-        eligibleCandidateCount: eligibleCandidates.length,
-      };
-    }
-  }
+  const eligibleCandidates = candidates.filter((candidate) => candidate.score === bestScore);
+  const selectedIndex = Math.floor(rng() * eligibleCandidates.length);
 
   return {
-    candidate: weightedCandidates[weightedCandidates.length - 1]?.candidate ?? eligibleCandidates[0],
+    candidate: eligibleCandidates[selectedIndex] ?? eligibleCandidates[0],
     eligibleCandidateCount: eligibleCandidates.length,
   };
 }

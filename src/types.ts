@@ -20,6 +20,8 @@ export interface FairnessMeta {
   score: number;
   standardDeviation: number;
   range: number;
+  averagePartnerGap: number;
+  maxPartnerGap: number;
   sameTierPairs: number;
   extremePairs: number;
   waitingPenalty: number;

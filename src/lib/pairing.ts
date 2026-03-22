@@ -1,5 +1,5 @@
 import type { AssignmentResult, PairingCandidate, Player } from '../types';
-import { createSeedKey, createSeededRng } from './seed';
+import { createSeedKey, createSeededRng, getPlayerSeedToken } from './seed';
 
 const collator = new Intl.Collator('ko');
 const tierWeight = { A: 3, B: 2, C: 1 } as const;
@@ -153,7 +153,7 @@ export function assignTeams(date: string, selectedPlayers: Player[]): Assignment
 
   const seedKey = createSeedKey(
     date,
-    normalizedPlayers.map((player) => player.name),
+    normalizedPlayers.map((player) => getPlayerSeedToken(player)),
   );
   const rng = createSeededRng(seedKey);
   const candidates = generateAllPairings(normalizedPlayers);

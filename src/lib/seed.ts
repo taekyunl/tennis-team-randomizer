@@ -1,3 +1,5 @@
+import type { Player } from '../types';
+
 const collator = new Intl.Collator('ko');
 
 export function normalizeSelectedNames(selectedNames: string[]): string[] {
@@ -7,6 +9,10 @@ export function normalizeSelectedNames(selectedNames: string[]): string[] {
 export function createSeedKey(date: string, selectedNames: string[]): string {
   const normalized = normalizeSelectedNames(selectedNames);
   return `${date}__${normalized.join('__')}`;
+}
+
+export function getPlayerSeedToken(player: Player): string {
+  return player.seedLabel ?? player.name;
 }
 
 function xmur3(seed: string) {

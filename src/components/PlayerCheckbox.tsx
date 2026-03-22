@@ -6,12 +6,6 @@ interface PlayerCheckboxProps {
   onToggle: (playerId: string) => void;
 }
 
-const tierLabel = {
-  A: '상',
-  B: '중',
-  C: '하',
-} as const;
-
 export function PlayerCheckbox({ player, checked, onToggle }: PlayerCheckboxProps) {
   return (
     <label
@@ -28,12 +22,14 @@ export function PlayerCheckbox({ player, checked, onToggle }: PlayerCheckboxProp
         />
         <div>
           <p className="text-sm font-medium text-ink">{player.name}</p>
-          <p className="text-xs text-muted">rating {player.rating.toFixed(1)}</p>
+          <p className="text-xs text-muted">참석 여부를 선택하세요</p>
         </div>
       </div>
-      <span className="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-xs font-medium text-accentStrong">
-        {tierLabel[player.tier]} 티어
-      </span>
+      <span
+        className={`h-2.5 w-2.5 rounded-full transition ${
+          checked ? 'bg-accent shadow-[0_0_18px_rgba(207,233,109,0.55)]' : 'bg-white/12'
+        }`}
+      />
     </label>
   );
 }

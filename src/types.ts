@@ -5,6 +5,9 @@ export interface Player {
   name: string;
   tier: PlayerTier;
   rating: number;
+  isGuest?: boolean;
+  seedLabel?: string;
+  skillHint?: string;
 }
 
 export interface Team {
@@ -37,4 +40,23 @@ export interface AssignmentResult {
   seedKey: string;
   selectedCount: number;
   fairnessMeta: FairnessMeta;
+}
+
+export interface MatchRecord {
+  id: string;
+  date: string;
+  teamA: [string, string];
+  teamB: [string, string];
+  winner: 'A' | 'B';
+  note?: string;
+  createdAt: string;
+}
+
+export interface PlayerStanding {
+  playerName: string;
+  wins: number;
+  losses: number;
+  games: number;
+  winRate: number;
+  points: number;
 }

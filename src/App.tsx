@@ -412,8 +412,8 @@ export default function App() {
 
                     <div className="grid gap-3 rounded-[24px] border border-line bg-[#0d100f] p-4 text-sm text-muted sm:grid-cols-2">
                       <p>후보군 수: {result.fairnessMeta.eligibleCandidateCount}</p>
-                      <p>적용 규칙: 손혜원 · 이태균 · 김혜연 서로 같은 팀 금지</p>
-                      <p>위반 수: {result.fairnessMeta.score}</p>
+                      <p>배정 방식: seed 기반 deterministic shuffle</p>
+                      <p>선택 점수: {result.fairnessMeta.score}</p>
                     </div>
                   </div>
                 ) : (

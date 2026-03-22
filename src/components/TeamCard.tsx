@@ -12,7 +12,6 @@ export function TeamCard({ team }: TeamCardProps) {
           <p className="text-xs uppercase tracking-[0.24em] text-accent/75">Team</p>
           <h3 className="mt-2 text-lg font-semibold text-ink">{team.teamLabel}</h3>
         </div>
-        <p className="font-mono text-xs text-muted">합산 {team.ratingTotal.toFixed(1)}</p>
       </div>
       <div className="mt-6 space-y-3">
         {team.members.map((member) => (

@@ -264,8 +264,8 @@ export default function App() {
           <main className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="space-y-6">
               <SectionCard
-                title="날짜"
-                description="같은 날짜 + 같은 참석자면 항상 같은 결과가 나옵니다."
+                title="Seed"
+                description="Seed는 날짜로 고릅니다. 같은 날짜 + 같은 참석자면 항상 같은 결과가 나옵니다."
                 action={
                   <button
                     type="button"
@@ -277,7 +277,7 @@ export default function App() {
                 }
               >
                 <label htmlFor="assignment-date" className="block text-sm font-medium text-ink">
-                  날짜
+                  Seed : 날짜
                 </label>
                 <input
                   id="assignment-date"
@@ -424,7 +424,7 @@ export default function App() {
                 )}
               </SectionCard>
 
-              <SectionCard title="시드 정보" description="입력된 날짜와 참석자 집합만으로 seed가 결정됩니다.">
+              <SectionCard title="Seed 정보" description="날짜 seed와 참석자 집합만으로 결과가 결정됩니다.">
                 <SeedInfo seedKey={previewSeed} />
               </SectionCard>
             </div>

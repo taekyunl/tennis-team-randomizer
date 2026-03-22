@@ -25,12 +25,35 @@ describe('seeded assignment', () => {
   });
 
   it('can produce a different result when the date changes', () => {
-    const players = findPlayers(['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선']);
-    const first = assignTeams('2026-03-21', players);
-    const second = assignTeams('2026-03-22', players);
+    const scenarios = [
+      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선'],
+      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '김동명', '이태균'],
+      ['이종하', '강인갑', '김령곤', '고영수', '최윤호', '박명선', '김동명'],
+    ];
 
-    expect(second.seedKey).not.toBe(first.seedKey);
-    expect(second.fairnessMeta.eligibleCandidateCount).toBeGreaterThan(0);
+    let changed = false;
+
+    for (const names of scenarios) {
+      const players = findPlayers(names);
+      const first = assignTeams('2026-03-21', players);
+      const firstSignature = JSON.stringify(first.teams);
+
+      for (let day = 22; day <= 31; day += 1) {
+        const second = assignTeams(`2026-03-${String(day).padStart(2, '0')}`, players);
+        expect(second.seedKey).not.toBe(first.seedKey);
+
+        if (JSON.stringify(second.teams) !== firstSignature) {
+          changed = true;
+          break;
+        }
+      }
+
+      if (changed) {
+        break;
+      }
+    }
+
+    expect(changed).toBe(true);
   });
 
   it('changes when the attendee set changes', () => {

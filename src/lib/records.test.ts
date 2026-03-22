@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canSaveRecord, computeStandings } from './records';
+import { canSaveRecord, computePairStandings, computeStandings } from './records';
 import type { MatchRecord } from '../types';
 
 describe('records', () => {
@@ -10,6 +10,7 @@ describe('records', () => {
         teamA: ['이종하', '강인갑'],
         teamB: ['김령곤', '고영수'],
         winner: 'A',
+        sets: [],
         note: '',
       }),
     ).toBe(true);
@@ -20,6 +21,7 @@ describe('records', () => {
         teamA: ['이종하', '강인갑'],
         teamB: ['이종하', '고영수'],
         winner: 'A',
+        sets: [],
         note: '',
       }),
     ).toBe(false);
@@ -33,6 +35,7 @@ describe('records', () => {
         teamA: ['이종하', '강인갑'],
         teamB: ['김령곤', '고영수'],
         winner: 'A',
+        sets: [{ teamAGames: 6, teamBGames: 3 }],
         note: '',
         createdAt: '2026-03-21T10:00:00.000Z',
       },
@@ -42,6 +45,7 @@ describe('records', () => {
         teamA: ['이종하', '고영수'],
         teamB: ['김령곤', '강인갑'],
         winner: 'B',
+        sets: [{ teamAGames: 4, teamBGames: 6 }],
         note: '',
         createdAt: '2026-03-22T10:00:00.000Z',
       },
@@ -51,5 +55,38 @@ describe('records', () => {
 
     expect(standings[0]).toMatchObject({ playerName: '강인갑', wins: 2, losses: 0 });
     expect(standings.find((row) => row.playerName === '고영수')).toMatchObject({ wins: 0, losses: 2 });
+  });
+
+  it('computes pair standings separately', () => {
+    const records: MatchRecord[] = [
+      {
+        id: '1',
+        date: '2026-03-21',
+        teamA: ['이종하', '강인갑'],
+        teamB: ['김령곤', '고영수'],
+        winner: 'A',
+        sets: [{ teamAGames: 6, teamBGames: 1 }],
+        note: '',
+        createdAt: '2026-03-21T10:00:00.000Z',
+      },
+      {
+        id: '2',
+        date: '2026-03-28',
+        teamA: ['이종하', '강인갑'],
+        teamB: ['최윤호', '박명선'],
+        winner: 'A',
+        sets: [{ teamAGames: 6, teamBGames: 4 }],
+        note: '',
+        createdAt: '2026-03-28T10:00:00.000Z',
+      },
+    ];
+
+    const pairStandings = computePairStandings(records);
+
+    expect(pairStandings[0]).toMatchObject({
+      players: ['강인갑', '이종하'],
+      wins: 2,
+      losses: 0,
+    });
   });
 });

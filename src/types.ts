@@ -48,6 +48,10 @@ export interface MatchRecord {
   teamA: [string, string];
   teamB: [string, string];
   winner: 'A' | 'B';
+  sets?: Array<{
+    teamAGames: number;
+    teamBGames: number;
+  }>;
   note?: string;
   createdAt: string;
 }
@@ -59,4 +63,13 @@ export interface PlayerStanding {
   games: number;
   winRate: number;
   points: number;
+}
+
+export interface PairStanding {
+  pairKey: string;
+  players: [string, string];
+  wins: number;
+  losses: number;
+  games: number;
+  winRate: number;
 }

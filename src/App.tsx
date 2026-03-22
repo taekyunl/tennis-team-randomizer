@@ -2,10 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { PLAYERS } from './data/players';
 import { GuestForm } from './components/GuestForm';
 import { RecordForm } from './components/RecordForm';
-import { StandingsTable } from './components/StandingsTable';
+import { StandingsPanel } from './components/StandingsPanel';
 import { assignTeams } from './lib/pairing';
 import { createEmptyGuestDraft, createGuestPlayer, type GuestDraft } from './lib/guest';
-import { canSaveRecord, computeStandings, createEmptyRecordDraft, createMatchRecord, type RecordDraft } from './lib/records';
+import {
+  canSaveRecord,
+  computePairStandings,
+  computeStandings,
+  createEmptyRecordDraft,
+  createMatchRecord,
+  type RecordDraft,
+} from './lib/records';
 import { createSeedKey, getPlayerSeedToken } from './lib/seed';
 import type { AssignmentResult, MatchRecord } from './types';
 import { PlayerCheckbox } from './components/PlayerCheckbox';
@@ -103,6 +110,7 @@ export default function App() {
     [selectedPlayers],
   );
   const standings = useMemo(() => computeStandings(records), [records]);
+  const pairStandings = useMemo(() => computePairStandings(records), [records]);
 
   const previewSeed = useMemo(
     () => createSeedKey(date, selectedPlayers.map((player) => getPlayerSeedToken(player))),
@@ -184,6 +192,11 @@ export default function App() {
       teamA: [teamA.members[0].name, teamA.members[1].name],
       teamB: [teamB.members[0].name, teamB.members[1].name],
       winner: 'A',
+      sets: [
+        { teamAGames: '', teamBGames: '' },
+        { teamAGames: '', teamBGames: '' },
+        { teamAGames: '', teamBGames: '' },
+      ],
       note: '',
     });
   }
@@ -212,12 +225,22 @@ export default function App() {
       <div className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:px-8 lg:px-10">
         <header className="relative overflow-hidden rounded-[32px] border border-line bg-[#0f1312]/90 px-6 py-8 shadow-glow sm:px-8 sm:py-10">
           <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,rgba(207,233,109,0.16),transparent_62%)] lg:block" />
-          <p className="text-xs uppercase tracking-[0.34em] text-accent/80">DOUBLES PROTOCOL</p>
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-ink sm:text-5xl">
-            Court Command
-          </h1>
-          <p className="mt-3 font-mono text-xs uppercase tracking-[0.28em] text-white/38">
-            오늘의 테니스 복식 팀 배정
+          <p className="text-xs uppercase tracking-[0.34em] text-accent/80">AUSTIN FRIDAY TENNIS</p>
+          <pre className="mt-5 overflow-x-auto font-mono text-[10px] leading-[1.15] text-ink sm:text-xs">
+{String.raw`    _           _   _         _____    _     _             
+   / \  _   _| |_(_)_ __   |  ___| _(_) __| | __ _ _   _
+  / _ \| | | | __| | '_ \  | |_ | '__| |/ _\` |/ _\` | | | |
+ / ___ \ |_| | |_| | | | | |  _|| |  | | (_| | (_| | |_| |
+/_/   \_\__,_|\__|_|_| |_| |_|  |_|  |_|\__,_|\__,_|\__, |
+                                                    |___/ 
+ _____                         _     
+|_   _|__ _ __  _ __  ___  ___| |__  
+  | |/ _ \ '_ \| '_ \/ __|/ __| '_ \ 
+  | |  __/ | | | | | \__ \ (__| | | |
+  |_|\___|_| |_|_| |_|___/\___|_| |_|`}
+          </pre>
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.28em] text-white/38">
+            Seeded doubles assignment and records ledger
           </p>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
             날짜와 참석자 조합을 기준으로, 같은 조건이면 항상 같은 결과가 나오는 복식 파트너
@@ -430,7 +453,12 @@ export default function App() {
               />
             </SectionCard>
 
-            <StandingsTable standings={standings} records={records} onDeleteRecord={handleDeleteRecord} />
+            <StandingsPanel
+              playerStandings={standings}
+              pairStandings={pairStandings}
+              records={records}
+              onDeleteRecord={handleDeleteRecord}
+            />
           </main>
         )}
       </div>
